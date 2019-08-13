@@ -20,6 +20,12 @@ function createApp() {
 
   if (config.NODE_ENV !== 'production') {
     app.use(morgan('dev'));
+  } else if (config.SENTRY_KEY) {
+    // eslint-disable-next-line global-require
+    const Raven = require('raven');
+    Raven.config(config.SENTRY_KEY).install();
+    app.use(Raven.requestHandler());
+    app.use(Raven.errorHandler());
   }
 
   if (!config.ALLOW_HTTP) {
