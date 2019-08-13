@@ -45,7 +45,7 @@ async function render(_opts = {}) {
       executablePath: config.CHROME_EXECUTABLE || undefined,
       headless: !config.DEBUG_MODE,
       ignoreHTTPSErrors: true,
-      args: ['--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      args: ['--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--enable-font-antialiasing'],
       sloMo: config.DEBUG_MODE ? 250 : undefined,
     });
     logger.info('Browser instance successfully created!');
