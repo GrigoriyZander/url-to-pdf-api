@@ -1,10 +1,7 @@
 const Joi = require('joi');
 
 const urlSchema = Joi.string().uri({
-  scheme: [
-    'http',
-    'https',
-  ],
+  relativeOnly: true,
 });
 
 const cookieSchema = Joi.object({

@@ -2,6 +2,7 @@ const _ = require('lodash');
 const ex = require('../util/express');
 const renderCore = require('../core/render-core');
 const url = require('url');
+const config = require('../config');
 
 function getMimeType(opts) {
   if (opts.output === 'pdf') {
@@ -42,13 +43,14 @@ const postRender = ex.createRoute((req, res) => {
   if (isBodyJson) {
     opts = _.merge({
       cookies: req.body.forwardCookies
-        ? parseCookies(req.cookies, req.body.url)
+        ? parseCookies(req.cookies, config.TARGET_HOST)
         : req.body.cookies || [],
       output: 'pdf',
       screenshot: {
         type: 'png',
       },
     }, req.body);
+    opts.url = config.TARGET_HOST + req.body.url;
   } else {
     opts = getOptsFromQuery(req);
     opts.html = req.body;
@@ -67,8 +69,8 @@ const postRender = ex.createRoute((req, res) => {
 function getOptsFromQuery(req) {
   const { query } = req;
   const opts = {
-    cookies: query.forwardCookies ? parseCookies(req.cookies, req.query.url) : query.cookies,
-    url: query.url,
+    cookies: query.forwardCookies ? parseCookies(req.cookies, config.TARGET_HOST) : query.cookies,
+    url: config.TARGET_HOST + req.body.url,
     attachmentName: query.attachmentName,
     scrollPage: query.scrollPage,
     emulateScreenMedia: query.emulateScreenMedia,

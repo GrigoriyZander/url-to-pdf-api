@@ -15,6 +15,7 @@ const config = {
   CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
   API_TOKENS: [],
   CHROME_EXECUTABLE: process.env.CHROME_EXECUTABLE,
+  TARGET_HOST: process.env.SKYEER_FRONT_HOST,
 };
 
 if (process.env.API_TOKENS) {
