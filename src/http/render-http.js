@@ -41,7 +41,7 @@ const postRender = ex.createRoute((req, res) => {
 
   let opts;
   if (isBodyJson) {
-    const host = `http://${config.TARGET_HOST}`;
+    const host = normalizeHostname(config.TARGET_HOST);
     opts = _.merge({
       cookies: req.body.forwardCookies
         ? parseCookies(req.cookies, host)
@@ -69,7 +69,7 @@ const postRender = ex.createRoute((req, res) => {
 
 function getOptsFromQuery(req) {
   const { query } = req;
-  const host = `http://${config.TARGET_HOST}`;
+  const host = normalizeHostname(config.TARGET_HOST);
   const opts = {
     cookies: query.forwardCookies ? parseCookies(req.cookies, host) : query.cookies,
     url: `${host}${query.url}`,
@@ -134,6 +134,20 @@ function parseCookies(cookies, reqUrl) {
     value,
     domain: targetUrl.host,
   }));
+}
+
+function normalizeHostname(hostname) {
+  let result = hostname;
+  if (typeof hostname !== 'string') {
+    throw new Error('invalid hostname');
+  }
+  if (!hostname.startsWith('http://') && !hostname.startsWith('https://')) {
+    result = `http://${hostname}`;
+  }
+  if (result.endsWith('/')) {
+    result = result.substr(0, result.length - 1);
+  }
+  return result;
 }
 
 module.exports = {
