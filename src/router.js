@@ -33,12 +33,8 @@ function createRouter() {
       allowUnknownQuery: false,
     },
   };
-  //router.get('/api/render', validate(getRenderSchema), render.getRender);
-  router.get('/api/render',(req, res)=>{
+  router.get('/api/render', validate(getRenderSchema), render.getRender);
 
-    // eslint-disable-next-line no-process-env
-    res.json(JSON.stringify(process.env));
-  });
   const postRenderSchema = {
     body: renderBodySchema,
     query: sharedQuerySchema,

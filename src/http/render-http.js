@@ -41,16 +41,17 @@ const postRender = ex.createRoute((req, res) => {
 
   let opts;
   if (isBodyJson) {
+    const host = `http://${config.TARGET_HOST}`;
     opts = _.merge({
       cookies: req.body.forwardCookies
-        ? parseCookies(req.cookies, config.TARGET_HOST)
+        ? parseCookies(req.cookies, host)
         : req.body.cookies || [],
       output: 'pdf',
       screenshot: {
         type: 'png',
       },
     }, req.body);
-    opts.url = config.TARGET_HOST + req.body.url;
+    opts.url = `${host}${req.body.url}`;
   } else {
     opts = getOptsFromQuery(req);
     opts.html = req.body;
@@ -68,9 +69,10 @@ const postRender = ex.createRoute((req, res) => {
 
 function getOptsFromQuery(req) {
   const { query } = req;
+  const host = `http://${config.TARGET_HOST}`;
   const opts = {
-    cookies: query.forwardCookies ? parseCookies(req.cookies, config.TARGET_HOST) : query.cookies,
-    url: config.TARGET_HOST + req.body.url,
+    cookies: query.forwardCookies ? parseCookies(req.cookies, host) : query.cookies,
+    url: `${host}${query.url}`,
     attachmentName: query.attachmentName,
     scrollPage: query.scrollPage,
     emulateScreenMedia: query.emulateScreenMedia,
