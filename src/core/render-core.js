@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const _ = require('lodash');
 const config = require('../config');
 const logger = require('../util/logger')(__filename);
+const sentry = require('../sentry');
 
 async function render(_opts = {}) {
   let browser;
@@ -63,9 +64,11 @@ async function render(_opts = {}) {
   // page.on('console', (...args) => logger.info('PAGE LOG:', ...args));
 
   page.on('error', (err) => {
+    sentry.captureException(err);
     logger.error(`Error event emitted: ${err}`);
     logger.error(err.stack);
     logger.info('Closing page.');
+    sentry.captureException(err);
     page.close();
   });
 
@@ -167,6 +170,7 @@ async function render(_opts = {}) {
   } catch (err) {
     logger.error(`Error when rendering page: ${err}`);
     logger.error(err.stack);
+    sentry.captureException(err);
     throw err;
   } finally {
     logger.info('Closing page..');

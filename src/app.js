@@ -1,15 +1,14 @@
 const express = require('express');
-const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const cors = require('cors');
 const logger = require('./util/logger')(__filename);
 const errorResponder = require('./middleware/error-responder');
-const errorLogger = require('./middleware/error-logger');
 const requireHttps = require('./middleware/require-https');
 const createRouter = require('./router');
 const config = require('./config');
+const sentry = require('./sentry');
 
 function createApp() {
   const app = express();
@@ -18,9 +17,7 @@ function createApp() {
   app.enable('trust proxy', 1);
   app.disable('x-powered-by');
 
-  if (config.NODE_ENV !== 'production') {
-    app.use(morgan('dev'));
-  }
+  app.use(sentry.requestHandler());
 
   if (!config.ALLOW_HTTP) {
     logger.info('All requests require HTTPS.');
@@ -51,20 +48,7 @@ function createApp() {
   const router = createRouter();
   app.use('/', router);
 
-  if (config.NODE_ENV !== 'production') {
-    app.use(errorLogger());
-  } else if (config.SENTRY_KEY) {
-    logger.info('Initializing Sentry express middleware');
-    // eslint-disable-next-line global-require
-    const Raven = require('raven');
-    Raven.config(config.SENTRY_KEY).install();
-    app.use(Raven.requestHandler());
-    app.use(Raven.errorHandler());
-    logger.info('Initializing Sentry express middleware success.');
-  } else {
-    logger.error('SENTRY_KEY not specified');
-    process.exit(1);
-  }
+  app.use(sentry.errorHandler());
 
   app.use(errorResponder());
 
