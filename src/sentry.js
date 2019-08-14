@@ -13,9 +13,9 @@ if (config.NODE_ENV === 'production') {
   Raven.config(config.SENTRY_KEY).install();
   logger.info('Initializing Sentry express middleware success.');
   module.exports = {
-    captureException: Raven.captureException,
-    requestHandler: Raven.requestHandler,
-    errorHandler: Raven.errorHandler,
+    captureException: Raven.captureException.bind(Raven),
+    requestHandler: Raven.requestHandler.bind(Raven),
+    errorHandler: Raven.errorHandler.bind(Raven),
   };
 } else {
   module.exports = {
