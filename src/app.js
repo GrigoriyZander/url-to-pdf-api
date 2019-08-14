@@ -21,11 +21,13 @@ function createApp() {
   if (config.NODE_ENV !== 'production') {
     app.use(morgan('dev'));
   } else if (config.SENTRY_KEY) {
+    logger.info('Initializing Sentry express middleware');
     // eslint-disable-next-line global-require
     const Raven = require('raven');
     Raven.config(config.SENTRY_KEY).install();
     app.use(Raven.requestHandler());
     app.use(Raven.errorHandler());
+    logger.info('Initializing Sentry express middleware success.');
   }
 
   if (!config.ALLOW_HTTP) {
