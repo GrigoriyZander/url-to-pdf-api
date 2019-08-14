@@ -61,7 +61,9 @@ async function render(_opts = {}) {
   const page = await context.newPage();
   const client = await page.target().createCDPSession();
 
-  // page.on('console', (...args) => logger.info('PAGE LOG:', ...args));
+  page.on('console', (msg) => {
+    logger.info('PAGE LOG', 'TYPE:', msg.type(), 'TEXT:', msg.text());
+  });
 
   page.on('error', (err) => {
     sentry.captureException(err);
