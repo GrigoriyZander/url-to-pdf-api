@@ -62,7 +62,8 @@ async function render(_opts = {}) {
   const client = await page.target().createCDPSession();
 
   page.on('console', (msg) => {
-    logger.info('PAGE LOG', 'TYPE:', msg.type(), 'TEXT:', msg.text());
+    const location = msg.location();
+    logger.info(`Page log - Type: [${msg.type()}]; Text: [${msg.text()}]; Url: [${location.url}]; Args: [${msg.args()}]`);
   });
 
   page.on('error', (err) => {
